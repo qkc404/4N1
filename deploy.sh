@@ -12,7 +12,7 @@ loading() {
 
 clear
 echo ""
-echo -e "  ${BOLD}${WHITE}404 NOT FOUND DEPLOYER${RESET}"
+echo -e "  ${BOLD}${WHITE}4N1 FAST DEPLOYER${RESET}"
 echo -e "  ${MAGENTA}MADE BY SAEKA TOJIRP${RESET}"
 echo -e "  ${GREEN}fb.com/saekacutiee${RESET}"
 echo ""
@@ -61,8 +61,9 @@ case "$MODE_CHOICE" in
     *) CPU="8"; RAM="16Gi"; MODE="ULTRA"; MAX_INSTANCES="1";;
 esac
 
+echo ""
 loading "BUILDING CONTAINER IMAGE"
-gcloud builds submit --tag "gcr.io/${PROJECT_ID}/${SERVICE_NAME}" --project=$PROJECT_ID --quiet > build.log 2>&1
+gcloud builds submit --tag "gcr.io/${PROJECT_ID}/${SERVICE_NAME}" --project="$PROJECT_ID" --quiet > build.log 2>&1
 
 if [ $? -ne 0 ]; then echo -e "  ${RED}BUILD FAILED${RESET}"; tail -n 10 build.log; exit 1; fi
 
@@ -73,20 +74,84 @@ gcloud run deploy "$SERVICE_NAME" \
   --cpu "$CPU" --memory "$RAM" --port 8080 \
   --concurrency 1000 --cpu-boost --no-cpu-throttling \
   --timeout 3600 --min-instances 1 --max-instances 4 \
-  --allow-unauthenticated --project=$PROJECT_ID --quiet > deploy.log 2>&1
+  --allow-unauthenticated --project="$PROJECT_ID" --quiet > deploy.log 2>&1
 
 if [ $? -ne 0 ]; then echo -e "  ${RED}DEPLOYMENT FAILED${RESET}"; tail -n 10 deploy.log; exit 1; fi
 
-SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" --region us-central1 --project=$PROJECT_ID --format='value(status.url)' 2>/dev/null)
+SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" --region us-central1 --project="$PROJECT_ID" --format='value(status.url)' 2>/dev/null)
 CLEAN_HOST=$(echo "$SERVICE_URL" | sed 's|https://||')
 
 echo ""
-echo -e "  ${GREEN}DEPLOYED SUCCESSFULLY${RESET}"
+echo -e "  ${GREEN} (⁠ ⁠ꈍ⁠ᴗ⁠ꈍ⁠) DEPLOYED SUCCESSFULLY${RESET}"
 echo ""
-echo -e "  ${CYAN}HOST       ${GREEN}${CLEAN_HOST}${RESET}"
+echo -e "  ${CYAN}RAW HOST   ${GREEN}${CLEAN_HOST}${RESET}"
+echo -e "  ${CYAN}DASHBOARD  ${GREEN}${SERVICE_URL}${RESET}"
 echo -e "  ${CYAN}PORT       ${GREEN}443${RESET}"
 echo -e "  ${CYAN}PASS       ${GREEN}saeka${RESET}"
 echo -e "  ${CYAN}MODE       ${GREEN}${MODE}${RESET}"
 echo -e "  ${CYAN}CPU        ${GREEN}${CPU}${RESET}"
 echo -e "  ${CYAN}RAM        ${GREEN}${RAM}${RESET}"
 echo ""
+
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${CYAN}                    PATHS & PROTOCOLS${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
+echo -e "  ${CYAN}  PROTOCOL     | WS PATH            | HTTPUPGRADE PATH${RESET}"
+echo -e "  ${YELLOW}  ──────────────────────────────────────────────────────────────${RESET}"
+echo -e "  ${GREEN}  VLESS${RESET}        | ${CYAN}/vless-saeka${RESET}       | ${CYAN}/vless-saeka-hu${RESET}"
+echo -e "  ${GREEN}  VMess${RESET}        | ${CYAN}/vmess-saeka${RESET}       | ${CYAN}/vmess-saeka-hu${RESET}"
+echo -e "  ${GREEN}  TROJAN${RESET}       | ${CYAN}/saeka-tojirp${RESET}     | ${CYAN}/saeka-tojirp-hu${RESET}"
+echo -e "  ${GREEN}  Shadowsocks${RESET}  | ${CYAN}/ss-saeka${RESET}         | ${CYAN}/ss-saeka-hu${RESET}"
+echo ""
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${CYAN}  HOST: ${GREEN}${CLEAN_HOST}${RESET}"
+echo -e "  ${CYAN}  PORT: ${GREEN}443${RESET}"
+echo -e "  ${CYAN}  SNI:  ${GREEN}fcmtoken.googleapis.com${RESET}"
+echo -e "  ${CYAN}  ALPN: ${GREEN}h2${RESET}"
+echo -e "  ${CYAN}  FP:   ${GREEN}chrome${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
+
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${CYAN}                    CONNECTION CONFIG URI'S${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
+echo -e "  ${GREEN}VLESS - WebSocket:${RESET}"
+echo -e "  ${CYAN}vless://saekaaa@${CLEAN_HOST}:443?encryption=none&type=ws&path=%2Fvless-saeka&host=${CLEAN_HOST}&alpn=h2&fp=chrome#VLESS-WS${RESET}"
+echo ""
+echo -e "  ${GREEN}VLESS - HTTPUpgrade:${RESET}"
+echo -e "  ${CYAN}vless://saekaaa@${CLEAN_HOST}:443?encryption=none&type=httpupgrade&path=%2Fvless-saeka-hu%3Fed%3D1280&host=${CLEAN_HOST}&alpn=h2&fp=chrome#VLESS-HU${RESET}"
+echo ""
+echo -e "  ${GREEN}VMess - WebSocket:${RESET}"
+echo -e "  ${CYAN}vmess://BASE64({\"v\":\"2\",\"ps\":\"VMESS-WS\",\"add\":\"${CLEAN_HOST}\",\"port\":\"443\",\"id\":\"saekaaa\",\"aid\":\"0\",\"net\":\"ws\",\"path\":\"/vmess-saeka\",\"host\":\"${CLEAN_HOST}\",\"tls\":\"tls\",\"sni\":\"${CLEAN_HOST}\",\"fp\":\"chrome\",\"alpn\":\"h2\"})${RESET}"
+echo ""
+echo -e "  ${GREEN}TROJAN - WebSocket:${RESET}"
+echo -e "  ${CYAN}trojan://saeka@${CLEAN_HOST}:443?security=tls&sni=fcmtoken.googleapis.com&type=ws&path=%2Fsaeka-tojirp&host=${CLEAN_HOST}&alpn=h2&fp=chrome#Trojan-WS${RESET}"
+echo ""
+echo -e "  ${GREEN}TROJAN - HTTPUpgrade:${RESET}"
+echo -e "  ${CYAN}trojan://saeka@${CLEAN_HOST}:443?security=tls&sni=fcmtoken.googleapis.com&type=httpupgrade&path=%2Fsaeka-tojirp-hu%3Fed%3D1280&host=${CLEAN_HOST}&alpn=h2&fp=chrome#Trojan-HU${RESET}"
+echo ""
+echo -e "  ${GREEN}Shadowsocks - WebSocket:${RESET}"
+echo -e "  ${CYAN}ss://$(echo -n "aes-256-gcm:saeka" | base64)@${CLEAN_HOST}:443?plugin=obfs-local%3Bobfs%3Dwebsocket%3Bobfs-host%3D${CLEAN_HOST}%3Bobfs-uri%3D%2Fss-saeka%3Bsni%3D${CLEAN_HOST}%3Btls#SS-WS${RESET}"
+echo ""
+echo -e "  ${GREEN}Shadowsocks - HTTPUpgrade:${RESET}"
+echo -e "  ${CYAN}ss://$(echo -n "aes-256-gcm:saeka" | base64)@${CLEAN_HOST}:443?plugin=obfs-local%3Bobfs%3Dwebsocket%3Bobfs-host%3D${CLEAN_HOST}%3Bobfs-uri%3D%2Fss-saeka-hu%3Bsni%3D${CLEAN_HOST}%3Btls#SS-HU${RESET}"
+echo ""
+
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${CYAN}  INBOUND PORTS${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
+echo -e "  ${CYAN}  VLESS WS        → ${GREEN}10000${RESET}"
+echo -e "  ${CYAN}  VLESS HU        → ${GREEN}10001${RESET}"
+echo -e "  ${CYAN}  VMess WS        → ${GREEN}10002${RESET}"
+echo -e "  ${CYAN}  VMess HU        → ${GREEN}10003${RESET}"
+echo -e "  ${CYAN}  TROJAN WS       → ${GREEN}10004${RESET}"
+echo -e "  ${CYAN}  TROJAN HU       → ${GREEN}10005${RESET}"
+echo -e "  ${CYAN}  Shadowsocks WS  → ${GREEN}10006${RESET}"
+echo -e "  ${CYAN}  Shadowsocks HU  → ${GREEN}10007${RESET}"
+echo ""
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+
+rm -f build.log deploy.log
