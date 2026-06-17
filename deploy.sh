@@ -72,7 +72,7 @@ gcloud run deploy "$SERVICE_NAME" \
   --platform managed --region us-central1 \
   --cpu "$CPU" --memory "$RAM" --port 8080 \
   --concurrency 1000 --cpu-boost --no-cpu-throttling \
-  --timeout 3600 --min-instances 1 --max-instances "$MAX_INSTANCES" \
+  --timeout 3600 --min-instances 1 --max-instances 4 \
   --allow-unauthenticated --project=$PROJECT_ID --quiet > deploy.log 2>&1
 
 if [ $? -ne 0 ]; then echo -e "  ${RED}DEPLOYMENT FAILED${RESET}"; tail -n 10 deploy.log; exit 1; fi
