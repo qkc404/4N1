@@ -10,6 +10,9 @@ RUN wget -qO /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/latest/dow
 RUN wget -qO /usr/local/bin/geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat && \
     wget -qO /usr/local/bin/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
 
+# CRITICAL FIX: Explicitly declare asset paths so Xray core reads the ad-block files flawlessly
+ENV XRAY_LOCATION_ASSET=/usr/local/bin
+
 COPY config.json /etc/xray.json
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY index.html /usr/local/openresty/nginx/html/index.html
