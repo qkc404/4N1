@@ -104,7 +104,10 @@
   "outbounds": [
     {
       "protocol": "freedom",
-      "tag": "direct"
+      "tag": "direct",
+      "settings": {
+        "domainStrategy": "UseIPv4"
+      }
     },
     {
       "protocol": "blackhole",
@@ -112,15 +115,19 @@
     }
   ],
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
         "type": "field",
         "domain": [
           "geosite:category-ads-all",
-          "geosite:category-ads",
-          "geosite:adserver",
-          "geosite:privacy"
+          "domain:doubleclick.net",
+          "domain:adservice.google.com",
+          "domain:googleadservices.com",
+          "domain:googlesyndication.com",
+          "domain:google-analytics.com",
+          "keyword:adserver",
+          "keyword:analytics"
         ],
         "outboundTag": "block"
       },
@@ -136,4 +143,4 @@
       }
     ]
   }
-}
+    }
