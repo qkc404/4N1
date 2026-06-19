@@ -11,8 +11,8 @@ RUN wget -qO /usr/local/bin/geosite.dat https://github.com/Loyalsoldier/v2ray-ru
     wget -qO /usr/local/bin/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
 
 COPY config.json /etc/xray.json
-COPY nginx.conf.txt /usr/local/openresty/nginx/conf/nginx.conf
-COPY index\ \(3\).html /usr/local/openresty/nginx/html/index.html
+COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+COPY index.html /usr/local/openresty/nginx/html/index.html
 EXPOSE 8080
 
 # Starts xray immediately in background, then hands over foreground thread control to OpenResty
