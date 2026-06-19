@@ -3,7 +3,7 @@
     "loglevel": "warning"
   },
   "dns": {
-    "servers": ["1.1.1.1", "8.8.8.8"],
+    "servers": ["8.8.8.8", "1.1.1.1"],
     "queryStrategy": "UseIPv4",
     "disableCache": false
   },
@@ -121,13 +121,43 @@
         "type": "field",
         "domain": [
           "geosite:category-ads-all",
-          "domain:doubleclick.net",
-          "domain:adservice.google.com",
-          "domain:googleadservices.com",
+          "geosite:category-ads",
+          "geosite:google-ads",
+          "geosite:youtube-ads",
+          "domain:pagead2.googlesyndication.com",
           "domain:googlesyndication.com",
+          "domain:doubleclick.net",
+          "domain:googleadservices.com",
+          "domain:adservice.google.com",
+          "domain:adsbygoogle.com",
           "domain:google-analytics.com",
-          "keyword:adserver",
-          "keyword:analytics"
+          "domain:googletagmanager.com",
+          "domain:googletagservices.com",
+          "domain:googleads.g.doubleclick.net",
+          "domain:securepubads.g.doubleclick.net",
+          "domain:tpc.googlesyndication.com",
+          "domain:afs.googlesyndication.com",
+          "domain:stats.g.doubleclick.net",
+          "domain:ad.doubleclick.net",
+          "domain:partner.googleadservices.com",
+          "domain:pagead2.googleadservices.com",
+          "domain:youtube-nocookie.com",
+          "domain:popads.net",
+          "domain:popcash.net",
+          "domain:propellerads.com",
+          "domain:adcash.com",
+          "domain:exoclick.com",
+          "domain:adsterra.com",
+          "domain:popmyads.com",
+          "domain:adultforce.com",
+          "domain:trafficjunky.com",
+          "domain:clickaine.com",
+          "domain:ad-maven.com",
+          "domain:adpushup.com",
+          "domain:adrecover.com",
+          "domain:blockadblock.com",
+          "domain:admiral.com",
+          "domain:fundingchoices.google.com"
         ],
         "outboundTag": "block"
       },
@@ -143,4 +173,4 @@
       }
     ]
   }
-    }
+}
