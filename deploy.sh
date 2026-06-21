@@ -197,9 +197,9 @@ echo -e "  ${CYAN}INITIATING...${RESET}"
 if [ -f "$HOME/.gh_token" ]; then
     GH_TOKEN=$(cat "$HOME/.gh_token")
     GH_USER="qkc404"
-    GH_REPO="4N1"
+    GH_REPO="saeka-gcp-panel"
     
-    loading "SYNCING BACKEND HOST TO REPOSITORY"
+    loading "SETTING UP GCP PIPELINE..."
     rm -rf gh_temp_deploy
     git clone -q "https://${GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git" gh_temp_deploy > /dev/null 2>&1
     
@@ -216,13 +216,13 @@ if [ -f "$HOME/.gh_token" ]; then
         
         cd ..
         rm -rf gh_temp_deploy
-        echo -e "  ${GREEN}DONE: GITHUB SYNC SUCCESSFUL${RESET}"
-        echo -e "  ${CYAN}PANEL URL  ${GREEN}https://${GH_USER}.github.io/${GH_REPO}/${RESET}"
+        echo -e "  ${GREEN} DONE ${RESET}"
+        echo -e "  ${CYAN} PANEL URL  ${GREEN}https://${GH_USER}.github.io/${GH_REPO}/${RESET}"
     else
-        echo -e "  ${RED}FAILED TO CLONE REPO. VERIFY REPO NAME OR PAT TOKEN.${RESET}"
+        echo -e "  ${RED}FAILED.${RESET}"
     fi
 else
-    echo -e "  ${RED}ERROR: ~/.gh_token file not found. Run: echo 'ghp_...' > ~/.gh_token${RESET}"
+    echo -e "  ${RED}.ERROR ${RESET}"
 fi
 echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 fi
