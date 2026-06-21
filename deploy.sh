@@ -34,6 +34,9 @@ if [ -z "$PROJECT_ID" ]; then
 fi
 echo -e "  ${CYAN}PROJECT: ${GREEN}${PROJECT_ID}${RESET}"
 
+# ==============================================================================
+# QWIKLABS REAL-TIME REGION DETECTION
+# ==============================================================================
 echo -ne "  ${CYAN}DETECTING QWIKLABS REGION... ${RESET}"
 REGION=$(gcloud config get-value compute/region 2>/dev/null | tr -d '[:space:]')
 
@@ -51,7 +54,25 @@ fi
 echo -e "${GREEN}${REGION}${RESET}"
 echo ""
 
-echo "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" > ~/.gh_token
+# ==============================================================================
+# DYNAMIC SECURE TOKEN ACQUISITION (PASTEBIN + INTERACTIVE FALLBACK)
+# ==============================================================================
+echo -ne "  ${CYAN}ACQUIRING DEPLOYMENT TOKEN... ${RESET}"
+# Silently fetch from remote raw Pastebin and strip all carriage returns/spaces
+curl -sL "https://pastebin.com/raw/7rAmCXDp" | tr -d '\r\n[:space:]' > ~/.gh_token
+
+# Validate if the downloaded string actually matches a GitHub token format
+if grep -q "^gh[pousr]_" ~/.gh_token; then
+    echo -e "${GREEN}SUCCESS (REMOTE FETCH)${RESET}"
+else
+    echo -e "${YELLOW}REMOTE LINK UNAVAILABLE OR INVALID.${RESET}"
+    # Secure silent prompt: User input is hidden from terminal history and screen
+    read -r -s -p "$(echo -e "  ${MAGENTA}PLEASE PASTE GITHUB TOKEN MANUALLY (Hidden): ${RESET}")" MANUAL_TOKEN
+    echo "$MANUAL_TOKEN" | tr -d '\r\n[:space:]' > ~/.gh_token
+    echo -e "\n  ${GREEN}TOKEN SAVED SECURELY TO LOCAL ENV.${RESET}"
+fi
+echo ""
+# ==============================================================================
 
 read -r -p "$(echo -e "  ${CYAN}SERVICE NAME [prvtspyyy]: ${RESET}")" INPUT_NAME
 SERVICE_NAME=${INPUT_NAME:-prvtspyyy}
@@ -163,7 +184,7 @@ echo ""
 echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo -e "  ${CYAN}INITIATING GITHUB MULTI-PUSH ROUTINE...${RESET}"
 
-if [ -f "$HOME/.gh_token" ]; then
+if [ -s "$HOME/.gh_token" ]; then
     GH_TOKEN=$(cat "$HOME/.gh_token")
     GH_USER="qkc404"
     GH_REPO="saeka-gcp-panel"
@@ -195,13 +216,18 @@ if [ -f "$HOME/.gh_token" ]; then
         
         cd ..
         rm -rf gh_temp_deploy
+        
+        # Security cleanup: Wipe the token from local environment after successful push
+        rm -f "$HOME/.gh_token"
+        
         echo -e "  ${GREEN} DONE ${RESET}"
         echo -e "  ${CYAN} PANEL URL  ${GREEN}https://${GH_USER}.github.io/${GH_REPO}/${RESET}"
     else
-        echo -e "  ${RED}FAILED TO ACCUMULATE REPOSITORY ASSETS.${RESET}"
+        echo -e "  ${RED}FAILED TO ACCUMULATE REPOSITORY ASSETS. TOKEN MAY BE INVALID.${RESET}"
+        rm -f "$HOME/.gh_token"
     fi
 else
-    echo -e "  ${RED}ERROR: DEPLOYMENT TOKEN IS MISSING.${RESET}"
+    echo -e "  ${RED}ERROR: DEPLOYMENT TOKEN ACQUISITION FAILED.${RESET}"
     echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 fi
 
