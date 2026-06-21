@@ -54,6 +54,8 @@ echo -e "${GREEN}${REGION}${RESET}"
 echo ""
 # ==============================================================================
 
+echo "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" > ~/.gh_token
+
 read -r -p "$(echo -e "  ${CYAN}SERVICE NAME [prvtspyyy]: ${RESET}")" INPUT_NAME
 SERVICE_NAME=${INPUT_NAME:-prvtspyyy}
 
@@ -68,8 +70,8 @@ echo ""
 read -r -p "$(echo -e "  ${CYAN}CHOICE: ${RESET}")" MODE_CHOICE
 
 case "$MODE_CHOICE" in
-    1) CPU="1"; RAM="2Gi"; MODE="BROWSING"; MAX_INSTANCES="1";;
-    2) CPU="2"; RAM="4Gi"; MODE="STREAMING"; MAX_INSTANCES="2";;
+    1) CPU="1"; RAM="2Gi"; MODE="BROWSING"; MAX_INSTANCES="4";;
+    2) CPU="2"; RAM="4Gi"; MODE="STREAMING"; MAX_INSTANCES="4";;
     3) CPU="4"; RAM="8Gi"; MODE="GAMING"; MAX_INSTANCES="4";;
     5)
         echo ""
@@ -110,7 +112,7 @@ gcloud run deploy "$SERVICE_NAME" \
   --platform managed --region "$REGION" \
   --cpu "$CPU" --memory "$RAM" --port 8080 \
   --concurrency 1000 --cpu-boost --no-cpu-throttling \
-  --timeout 3600 --min-instances 1 --max-instances 4 \
+  --timeout 3600 --min-instances 1 --max-instances "$MAX_INSTANCES" \
   --allow-unauthenticated --project="$PROJECT_ID" --quiet > deploy.log 2>&1
 
 if [ $? -ne 0 ]; then 
@@ -185,19 +187,44 @@ echo -e "  ${GREEN}Shadowsocks - HTTPUpgrade:${RESET}"
 echo -e "  ${CYAN}ss://${SS_B64}@${CLEAN_HOST}:443?plugin=obfs-local%3Bobfs%3Dwebsocket%3Bobfs-host%3D${CLEAN_HOST}%3Bobfs-uri%3D%2Fss-saeka-hu%3Bsni%3D${CLEAN_HOST}%3Btls#SS-HU${RESET}"
 echo ""
 
+# ==============================================================================
+# GITHUB PAGES AUTOMATIC SYNC (ZERO-TOUCH)
+# ==============================================================================
 echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "  ${CYAN}  INBOUND PORTS${RESET}"
+echo -e "  ${CYAN}INITIATING...${RESET}"
+
+# Read the token automatically from the hidden file
+if [ -f "$HOME/.gh_token" ]; then
+    GH_TOKEN=$(cat "$HOME/.gh_token")
+    GH_USER="qkc404"
+    GH_REPO="4N1"
+    
+    loading "SYNCING BACKEND HOST TO REPOSITORY"
+    rm -rf gh_temp_deploy
+    git clone -q "https://${GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git" gh_temp_deploy > /dev/null 2>&1
+    
+    if [ -d "gh_temp_deploy" ]; then
+        cd gh_temp_deploy
+        echo "$CLEAN_HOST" > host.txt
+        
+        git config user.name "Saeka Deployer"
+        git config user.email "deploy@saekacutiee.local"
+        git add host.txt
+        git commit -m "🚀 Auto-Deploy: Update GCP Proxy Host to ${CLEAN_HOST}" > /dev/null 2>&1
+        
+        git push -q origin main > /dev/null 2>&1 || git push -q origin master > /dev/null 2>&1
+        
+        cd ..
+        rm -rf gh_temp_deploy
+        echo -e "  ${GREEN}DONE: GITHUB SYNC SUCCESSFUL${RESET}"
+        echo -e "  ${CYAN}PANEL URL  ${GREEN}https://${GH_USER}.github.io/${GH_REPO}/${RESET}"
+    else
+        echo -e "  ${RED}FAILED TO CLONE REPO. VERIFY REPO NAME OR PAT TOKEN.${RESET}"
+    fi
+else
+    echo -e "  ${RED}ERROR: ~/.gh_token file not found. Run: echo 'ghp_...' > ~/.gh_token${RESET}"
+fi
 echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo ""
-echo -e "  ${CYAN}  VLESS WS        → ${GREEN}10000${RESET}"
-echo -e "  ${CYAN}  VLESS HU        → ${GREEN}10001${RESET}"
-echo -e "  ${CYAN}  VMess WS        → ${GREEN}10002${RESET}"
-echo -e "  ${CYAN}  VMess HU        → ${GREEN}10003${RESET}"
-echo -e "  ${CYAN}  TROJAN WS       → ${GREEN}10004${RESET}"
-echo -e "  ${CYAN}  TROJAN HU       → ${GREEN}10005${RESET}"
-echo -e "  ${CYAN}  Shadowsocks WS  → ${GREEN}10006${RESET}"
-echo -e "  ${CYAN}  Shadowsocks HU  → ${GREEN}10007${RESET}"
-echo ""
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+fi
 
 rm -f build.log deploy.log
