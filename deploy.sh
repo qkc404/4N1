@@ -126,7 +126,7 @@ CLEAN_HOST=$(echo "$SERVICE_URL" | sed 's|https://||')
 
 # Prepare Base64 Outputs
 SS_B64=$(echo -n "aes-256-gcm:saeka" | base64 | tr -d '\n')
-VMESS_WS_JSON='{"v":"2","ps":"VMESS-WS","add":"'"${CLEAN_HOST}"'","port":"443","id":"saekaaa","aid":"0","net":"ws","path":"/vmess-saeka","host":"'"${CLEAN_HOST}"'","tls":"tls","sni":"'"${CLEAN_HOST}"'","fp":"chrome","alpn":"h2"}'
+VMESS_WS_JSON='{"v":"2","ps":"VMESS-WS","add":"'"${CLEAN_HOST}"'","port":"443","id":"saekaaa","aid":"0","net":"ws","path":"/vmess-saeka","host":"'"${CLEAN_HOST}"'","tls":"tls","sni":"'"${CLEAN_HOST}"'[...]
 VMESS_WS_B64=$(echo -n "$VMESS_WS_JSON" | base64 | tr -d '\n')
 
 echo ""
@@ -141,29 +141,29 @@ echo -e "  ${CYAN}CPU        ${GREEN}${CPU}${RESET}"
 echo -e "  ${CYAN}RAM        ${GREEN}${RAM}${RESET}"
 echo ""
 
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[...]
 echo -e "  ${CYAN}                    PATHS & PROTOCOLS${RESET}"
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[...]
 echo ""
 echo -e "  ${CYAN}  PROTOCOL     | WS PATH            | HTTPUPGRADE PATH${RESET}"
-echo -e "  ${YELLOW}  ──────────────────────────────────────────────────────────────${RESET}"
+echo -e "  ${YELLOW}  ───────────────────────────────────────────────────────────[...]
 echo -e "  ${GREEN}  VLESS${RESET}        | ${CYAN}/vless-saeka${RESET}       | ${CYAN}/vless-saeka-hu${RESET}"
 echo -e "  ${GREEN}  VMess${RESET}        | ${CYAN}/vmess-saeka${RESET}       | ${CYAN}/vmess-saeka-hu${RESET}"
 echo -e "  ${GREEN}  TROJAN${RESET}       | ${CYAN}/saeka-tojirp${RESET}     | ${CYAN}/saeka-tojirp-hu${RESET}"
 echo -e "  ${GREEN}  Shadowsocks${RESET}  | ${CYAN}/ss-saeka${RESET}         | ${CYAN}/ss-saeka-hu${RESET}"
 echo ""
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[...]
 echo -e "  ${CYAN}  HOST: ${GREEN}${CLEAN_HOST}${RESET}"
 echo -e "  ${CYAN}  PORT: ${GREEN}443${RESET}"
 echo -e "  ${CYAN}  SNI:  ${GREEN}fcmtoken.googleapis.com${RESET}"
 echo -e "  ${CYAN}  ALPN: ${GREEN}h2${RESET}"
 echo -e "  ${CYAN}  FP:   ${GREEN}chrome${RESET}"
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[...]
 echo ""
 
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[...]
 echo -e "  ${CYAN}                    CONNECTION CONFIG URI'S${RESET}"
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[...]
 echo ""
 echo -e "  ${GREEN}VLESS - WebSocket:${RESET}"
 echo -e "  ${CYAN}vless://saekaaa@${CLEAN_HOST}:443?encryption=none&type=ws&path=%2Fvless-saeka&host=${CLEAN_HOST}&alpn=h2&fp=chrome#VLESS-WS${RESET}"
@@ -190,7 +190,7 @@ echo ""
 # ==============================================================================
 # GITHUB PAGES AUTOMATIC SYNC (ZERO-TOUCH)
 # ==============================================================================
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[...]
 echo -e "  ${CYAN}INITIATING...${RESET}"
 
 # Read the token automatically from the hidden file
@@ -201,30 +201,59 @@ if [ -f "$HOME/.gh_token" ]; then
     
     loading "SETTING UP GCP PIPELINE..."
     rm -rf gh_temp_deploy
-    git clone -q "https://${GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git" gh_temp_deploy > /dev/null 2>&1
     
-    if [ -d "gh_temp_deploy" ]; then
-        cd gh_temp_deploy
+    # Clone the repository
+    git clone "https://${GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git" gh_temp_deploy 2>&1
+    CLONE_STATUS=$?
+    
+    if [ $CLONE_STATUS -eq 0 ] && [ -d "gh_temp_deploy" ]; then
+        cd gh_temp_deploy || exit 1
+        
+        # Write host to file
         echo "$CLEAN_HOST" > host.txt
         
+        # Configure git
         git config user.name "Saeka Deployer"
         git config user.email "deploy@saekacutiee.local"
+        
+        # Stage and commit
         git add host.txt
-        git commit -m "🚀 Auto-Deploy: Update GCP Proxy Host to ${CLEAN_HOST}" > /dev/null 2>&1
+        git commit -m "🚀 Auto-Deploy: Update GCP Proxy Host to ${CLEAN_HOST}" 2>&1
+        COMMIT_STATUS=$?
         
-        git push -q origin main > /dev/null 2>&1 || git push -q origin master > /dev/null 2>&1
-        
-        cd ..
-        rm -rf gh_temp_deploy
-        echo -e "  ${GREEN} DONE ${RESET}"
-        echo -e "  ${CYAN} PANEL URL  ${GREEN}https://${GH_USER}.github.io/${GH_REPO}/${RESET}"
+        if [ $COMMIT_STATUS -eq 0 ]; then
+            # Try to push to main, fallback to master
+            git push origin main 2>&1
+            PUSH_STATUS=$?
+            
+            if [ $PUSH_STATUS -ne 0 ]; then
+                echo -e "  ${YELLOW}Trying master branch...${RESET}"
+                git push origin master 2>&1
+                PUSH_STATUS=$?
+            fi
+            
+            cd ..
+            rm -rf gh_temp_deploy
+            
+            if [ $PUSH_STATUS -eq 0 ]; then
+                echo -e "  ${GREEN}DONE${RESET}"
+                echo -e "  ${CYAN}PANEL URL  ${GREEN}https://${GH_USER}.github.io/${GH_REPO}/${RESET}"
+            else
+                echo -e "  ${RED}PUSH FAILED - Check token permissions${RESET}"
+            fi
+        else
+            cd ..
+            rm -rf gh_temp_deploy
+            echo -e "  ${RED}COMMIT FAILED - No changes or error${RESET}"
+        fi
     else
-        echo -e "  ${RED}FAILED.${RESET}"
+        echo -e "  ${RED}CLONE FAILED - Check token and repo name${RESET}"
+        rm -rf gh_temp_deploy
     fi
 else
-    echo -e "  ${RED}.ERROR ${RESET}"
+    echo -e "  ${RED}TOKEN FILE NOT FOUND${RESET}"
 fi
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-fi
+
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[...]
 
 rm -f build.log deploy.log
