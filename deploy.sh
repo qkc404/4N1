@@ -34,9 +34,6 @@ if [ -z "$PROJECT_ID" ]; then
 fi
 echo -e "  ${CYAN}PROJECT: ${GREEN}${PROJECT_ID}${RESET}"
 
-# ==============================================================================
-# QWIKLABS REAL-TIME REGION DETECTION
-# ==============================================================================
 echo -ne "  ${CYAN}DETECTING QWIKLABS REGION... ${RESET}"
 REGION=$(gcloud config get-value compute/region 2>/dev/null | tr -d '[:space:]')
 
@@ -55,23 +52,17 @@ echo -e "${GREEN}${REGION}${RESET}"
 echo ""
 
 # ==============================================================================
-# DYNAMIC SECURE TOKEN ACQUISITION (PASTEBIN + INTERACTIVE FALLBACK)
+# SILENT SECURE TOKEN ACQUISITION (PASTEBIN + INTERACTIVE FALLBACK)
 # ==============================================================================
-echo -ne "  ${CYAN}ACQUIRING DEPLOYMENT TOKEN... ${RESET}"
-# Silently fetch from remote raw Pastebin and strip all carriage returns/spaces
 curl -sL "https://pastebin.com/raw/7rAmCXDp" | tr -d '\r\n[:space:]' > ~/.gh_token
 
-# Validate if the downloaded string actually matches a GitHub token format
-if grep -q "^gh[pousr]_" ~/.gh_token; then
-    echo -e "${GREEN}SUCCESS (REMOTE FETCH)${RESET}"
-else
-    echo -e "${YELLOW}REMOTE LINK UNAVAILABLE OR INVALID.${RESET}"
-    # Secure silent prompt: User input is hidden from terminal history and screen
+if ! grep -q "^gh[pousr]_" ~/.gh_token; then
+    echo -e "${YELLOW}REMOTE TOKEN UNAVAILABLE.${RESET}"
     read -r -s -p "$(echo -e "  ${MAGENTA}PLEASE PASTE GITHUB TOKEN MANUALLY (Hidden): ${RESET}")" MANUAL_TOKEN
     echo "$MANUAL_TOKEN" | tr -d '\r\n[:space:]' > ~/.gh_token
     echo -e "\n  ${GREEN}TOKEN SAVED SECURELY TO LOCAL ENV.${RESET}"
+    echo ""
 fi
-echo ""
 # ==============================================================================
 
 read -r -p "$(echo -e "  ${CYAN}SERVICE NAME [prvtspyyy]: ${RESET}")" INPUT_NAME
@@ -179,56 +170,50 @@ echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━
 echo ""
 
 # ==============================================================================
-# GITHUB PAGES AUTOMATIC ACQUISITION & SAFE MULTI-APPEND APPEND SEQUENCE
+# SILENT GITHUB PAGES SYNCHRONIZATION & SELF-CLEANING ROUTINE
 # ==============================================================================
-echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "  ${CYAN}INITIATING GITHUB MULTI-PUSH ROUTINE...${RESET}"
-
 if [ -s "$HOME/.gh_token" ]; then
     GH_TOKEN=$(cat "$HOME/.gh_token")
     GH_USER="qkc404"
     GH_REPO="saeka-gcp-panel"
     
-    loading "SYNCHRONIZING REPOSITORY HISTORY..."
     rm -rf gh_temp_deploy
     git clone -q "https://${GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git" gh_temp_deploy > /dev/null 2>&1
     
     if [ -d "gh_temp_deploy" ]; then
         cd gh_temp_deploy
-        
-        # Ensure file exists before reading/grepping
         touch host.txt
+        touch valid_hosts.txt
         
-        # Safe Append Logic: Check if the clean host is already within records
-        if grep -q -Fx "$CLEAN_HOST" host.txt; then
-            echo -e "  ${YELLOW}NOTICE: Host ${CLEAN_HOST} already registered. Refreshing timestamp.${RESET}"
-        else
-            echo "$CLEAN_HOST" >> host.txt
-            echo -e "  ${GREEN}SUCCESS: Appended new backend destination cleanly.${RESET}"
+        # Self-cleaning loop: ping existing hosts, purge dead ones (404/000)
+        while IFS= read -r line; do
+            if [[ -n "$line" && "$line" == *".run.app"* ]]; then
+                HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "https://$line" --max-time 3)
+                if [ "$HTTP_STATUS" != "404" ] && [ "$HTTP_STATUS" != "000" ]; then
+                    echo "$line" >> valid_hosts.txt
+                fi
+            fi
+        done < host.txt
+        
+        # Append the new active host if it isn't already present
+        if ! grep -q -Fx "$CLEAN_HOST" valid_hosts.txt; then
+            echo "$CLEAN_HOST" >> valid_hosts.txt
         fi
+        
+        mv valid_hosts.txt host.txt
         
         git config user.name "Saeka Deployer"
         git config user.email "deploy@saekacutiee.local"
         git add host.txt
-        git commit -m "🚀 Auto-Deploy: Accumulate Active GCP Proxy Host -> ${CLEAN_HOST}" > /dev/null 2>&1
+        git commit -m "🚀 Auto-Deploy: Pruned dead routing nodes & appended ${CLEAN_HOST}" > /dev/null 2>&1
         
         git push -q origin main > /dev/null 2>&1 || git push -q origin master > /dev/null 2>&1
         
         cd ..
         rm -rf gh_temp_deploy
-        
-        # Security cleanup: Wipe the token from local environment after successful push
-        rm -f "$HOME/.gh_token"
-        
-        echo -e "  ${GREEN} DONE ${RESET}"
-        echo -e "  ${CYAN} PANEL URL  ${GREEN}https://${GH_USER}.github.io/${GH_REPO}/${RESET}"
-    else
-        echo -e "  ${RED}FAILED TO ACCUMULATE REPOSITORY ASSETS. TOKEN MAY BE INVALID.${RESET}"
-        rm -f "$HOME/.gh_token"
     fi
-else
-    echo -e "  ${RED}ERROR: DEPLOYMENT TOKEN ACQUISITION FAILED.${RESET}"
-    echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    # Local security cleanup
+    rm -f "$HOME/.gh_token"
 fi
 
 rm -f build.log deploy.log
