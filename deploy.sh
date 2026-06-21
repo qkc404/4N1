@@ -51,7 +51,7 @@ fi
 echo -e "${GREEN}${REGION}${RESET}"
 echo ""
 
-echo "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" > ~/.gh_token
+echo "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" > ~/.gh_token
 
 read -r -p "$(echo -e "  ${CYAN}SERVICE NAME [prvtspyyy]: ${RESET}")" INPUT_NAME
 SERVICE_NAME=${INPUT_NAME:-prvtspyyy}
