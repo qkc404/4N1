@@ -34,7 +34,7 @@ if [ -z "$PROJECT_ID" ]; then
 fi
 echo -e "  ${CYAN}PROJECT: ${GREEN}${PROJECT_ID}${RESET}"
 
-echo -ne "  ${CYAN}DETECTING QWIKLABS REGION... ${RESET}"
+echo -ne "  ${CYAN}DETECTING QWIKLABS REGION ( Press Enter if stuck )... ${RESET}"
 REGION=$(gcloud config get-value compute/region 2>/dev/null | tr -d '[:space:]')
 
 if [ -z "$REGION" ]; then
