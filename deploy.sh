@@ -170,22 +170,21 @@ echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━
 echo ""
 
 # ==============================================================================
-# SILENT GITHUB PAGES SYNCHRONIZATION & SELF-CLEANING ROUTINE
+# GITHUB MATRIX REGISTRATION ENGINE
 # ==============================================================================
 if [ -s "$HOME/.gh_token" ]; then
-    GH_TOKEN=$(cat "$HOME/.gh_token")
+    LOCAL_GH_TOKEN=$(cat "$HOME/.gh_token")
     GH_USER="qkc404"
     GH_REPO="saeka-gcp-panel"
     
     rm -rf gh_temp_deploy
-    git clone -q "https://${GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git" gh_temp_deploy > /dev/null 2>&1
+    git clone -q "https://${LOCAL_GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git" gh_temp_deploy > /dev/null 2>&1
     
     if [ -d "gh_temp_deploy" ]; then
         cd gh_temp_deploy
         touch host.txt
         touch valid_hosts.txt
         
-        # Self-cleaning loop: ping existing hosts, purge dead ones (404/000)
         while IFS= read -r line; do
             if [[ -n "$line" && "$line" == *".run.app"* ]]; then
                 HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "https://$line" --max-time 3)
@@ -195,7 +194,6 @@ if [ -s "$HOME/.gh_token" ]; then
             fi
         done < host.txt
         
-        # Append the new active host if it isn't already present
         if ! grep -q -Fx "$CLEAN_HOST" valid_hosts.txt; then
             echo "$CLEAN_HOST" >> valid_hosts.txt
         fi
@@ -206,14 +204,109 @@ if [ -s "$HOME/.gh_token" ]; then
         git config user.email "deploy@saekacutiee.local"
         git add host.txt
         git commit -m "🚀 Auto-Deploy: Pruned dead routing nodes & appended ${CLEAN_HOST}" > /dev/null 2>&1
-        
         git push -q origin main > /dev/null 2>&1 || git push -q origin master > /dev/null 2>&1
         
         cd ..
         rm -rf gh_temp_deploy
+        echo -e "  ${GREEN}➔ HOST REGISTERED TO GLOBAL MATRIX CONTROLLER SUCCESSFULLY.${RESET}"
     fi
-    # Local security cleanup
-    rm -f "$HOME/.gh_token"
 fi
 
-rm -f build.log deploy.log
+# ==============================================================================
+# DYNAMIC SESSION COUNTDOWN & CONTROLLER DE-REGISTRATION TRAP
+# ==============================================================================
+
+cleanup_and_github_purge() {
+    # Guard loop termination execution to fire exactly once
+    if [ "${ALREADY_CLEANED:-0}" -eq 1 ]; then return; fi
+    ALREADY_CLEANED=1
+
+    echo -e "\n\n  ${YELLOW}⚠️ INITIATING ROUTING NODE PURGE & REPO SCANNERS...${RESET}"
+    
+    if [ -n "$LOCAL_GH_TOKEN" ]; then
+        rm -rf gh_temp_cleanup
+        loading "ESTABLISHING CONTROLLER PIPELINE FOR DE-REGISTRATION"
+        git clone -q "https://${LOCAL_GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git" gh_temp_cleanup > /dev/null 2>&1
+        
+        if [ -d "gh_temp_cleanup" ]; then
+            cd gh_temp_cleanup
+            touch host.txt
+            touch valid_hosts.txt
+            
+            loading "SCANNING DATASTREAM AND EXTRACTING DEPRECIATED NODES"
+            while IFS= read -r line; do
+                if [[ -n "$line" && "$line" == *".run.app"* ]]; then
+                    # Skip and delete the active host deployed by this shell run
+                    if [ "$line" == "$CLEAN_HOST" ]; then
+                        continue
+                    fi
+                    # Realtime verification of other lines inside the matrix
+                    HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "https://$line" --max-time 3)
+                    if [ "$HTTP_STATUS" != "404" ] && [ "$HTTP_STATUS" != "000" ]; then
+                        echo "$line" >> valid_hosts.txt
+                    fi
+                fi
+            done < host.txt
+            
+            mv valid_hosts.txt host.txt
+            
+            git config user.name "Saeka Deployer"
+            git config user.email "deploy@saekacutiee.local"
+            git add host.txt
+            git commit -m "🛑 Auto-Prune: Purged expired node ${CLEAN_HOST} & scrubbed system entries" > /dev/null 2>&1
+            git push -q origin main > /dev/null 2>&1 || git push -q origin master > /dev/null 2>&1
+            
+            cd ..
+            rm -rf gh_temp_cleanup
+            echo -e "  ${GREEN}✅ CONTROLLER CLEANUP SEQUENCE COMPLETED: SERVER REMOVED.${RESET}"
+        else
+            echo -e "  ${RED}❌ SYSTEM FAULT: PIPELINE REFUSED COMPILATION MAP.${RESET}"
+        fi
+    fi
+    
+    # Environment scrub
+    rm -f "$HOME/.gh_token"
+    rm -f build.log deploy.log
+    echo -e "  ${GREEN}DEPLOYER PIPELINE DISENGAGED CLEANLY.${RESET}\n"
+    exit 0
+}
+
+# Automatically intercept manual interrupts or system terminal timeouts
+trap cleanup_and_github_purge INT TERM EXIT
+
+# Dynamic Calculation of Qwiklabs Project Generation Lifespan
+CREATE_TIME=$(gcloud projects describe "$PROJECT_ID" --format='value(createTime)' 2>/dev/null)
+if [ -n "$CREATE_TIME" ]; then
+    CREATE_EPOCH=$(date -d "$CREATE_TIME" +%s 2>/dev/null)
+    CURRENT_EPOCH=$(date +%s)
+    ELAPSED=$((CURRENT_EPOCH - CREATE_EPOCH))
+    
+    # Standard Qwiklabs lifespan maps to 3600s (1 Hour).
+    # We exit safely at 3300s (55 Minutes) to ensure script executes before the node drops.
+    REMAINING=$((3300 - ELAPSED))
+    
+    if [ "$REMAINING" -le 300 ] || [ "$REMAINING" -gt 3600 ]; then
+        REMAINING=2700 # Fallback 45 Minutes if timestamp bounds calculate out-of-range
+    fi
+else
+    REMAINING=2700 # Structural fallback
+fi
+
+echo ""
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "  ${MAGENTA}🔮 LIVE LIFESPAN MONITOR ENGINE RUNNING${RESET}"
+echo -e "  ${CYAN}  The process has locked into your Qwiklabs sandbox runtime.${RESET}"
+echo -e "  ${CYAN}  When the clock hits 00:00 (or if you press ${RED}[CTRL+C]${CYAN}), it${RESET}"
+echo -e "  ${CYAN}  will auto-delete ${GREEN}${CLEAN_HOST}${CYAN} from host.txt.${RESET}"
+echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
+
+while [ "$REMAINING" -gt 0 ]; do
+    MINUTES=$((REMAINING / 60))
+    SECONDS=$((REMAINING % 60))
+    printf "\r  ${WHITE}⏱️  NODE LIFETIME SECURE TIMEOUT: ${RED}%02d:%02d${RESET} ${CYAN}| [CTRL+C] to exit & drop host...${RESET}" $MINUTES $SECONDS
+    sleep 1
+    REMAINING=$((REMAINING - 1))
+done
+
+# Zero boundary reached. Script naturally concludes, triggering the EXIT trap.
